@@ -1,0 +1,25 @@
+#! /usr/bin/bash
+
+docker compose up -d
+
+while true; do
+    result=`curl -Ss 192.168.200.140`
+    if [[ $? == 0 ]]; then
+        echo "======================================================"
+        echo $result
+        echo "======================================================"
+        break
+    fi
+    sleep 1s
+done
+
+echo "stopping master....."
+docker stop keepalived_master
+
+echo "======================================================"
+curl -Ss 192.168.200.140
+echo "======================================================"
+
+docker compose down
+docker rm keepalived_master keepalived_backup
+docker rmi keepalived-master:latest keepalived-backup:latest
