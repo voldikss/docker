@@ -1,0 +1,41 @@
+#! /usr/bin/bash
+
+set -uexo pipefail
+
+up() {
+    sudo mkdir -p /data/gitlab/data
+    sudo mkdir -p /data/gitlab/etc
+    sudo mkdir -p /data/gitlab/log
+    sudo mkdir -p /data/gitlab-runner/etc
+    docker-compose up -d
+}
+
+down() {
+    docker-compose down
+
+    if [[ $2 == '-f' || $2 == '--force' ]]; then
+        sudo rm -rf /data/gitlab/data
+        sudo rm -rf /data/gitlab/etc
+        sudo rm -rf /data/gitlab/log
+        sudo rm -rf /data/gitlab-runner/etc
+    fi
+}
+
+genlic() {
+    ruby ./license.rb
+    cp -f license_key.pub /opt/gitlab/embedded/service/gitlab-rails/.license_encryption_key.pub
+
+    sed -i 's@restricted_attr(:plan).presence || STARTER_PLAN@restricted_attr(:plan).presence || ULTIMATE_PLAN@g' /opt/gitlab/embedded/service/gitlab-rails/ee/app/models/license.rb
+
+    gitlab-ctl reconfigure
+    gitlab-ctl restart
+
+    cat GitLabBV.gitlab-license
+    echo 打开 http://localhost/admin/application_settings/general 添加证书
+}
+
+case $1 in
+    up) up;;
+    down) down;;
+    genlic) genlic;;
+esac

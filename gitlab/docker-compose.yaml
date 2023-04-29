@@ -1,26 +1,26 @@
-version: '3'
+version: '3.6'
 
 services:
   gitlab:
     container_name: gitlab
-    image: gitlab/gitlab-ce:latest
+    image: 'gitlab/gitlab-ee:latest'
     privileged: true
     hostname: gitlab
     environment:
-      GITLAB_ROOT_PASSWORD: 12345678
+      GITLAB_ROOT_PASSWORD: dyz@0808
     networks:
       - gitlab
     ports:
-      - 80:80
-      - 443:443
-      - 22:22
-      - 5005:5005
+      - '80:80'
+      - '443:443'
+      - '22:22'
+      - '5005:5005'
     volumes:
-      - /data/gitlab/etc:/etc/gitlab
-      - /data/gitlab/log:/var/log/gitlab
+      - /data/gitlab/config:/etc/gitlab
+      - /data/gitlab/logs:/var/log/gitlab
       - /data/gitlab/data:/var/opt/gitlab
-    extra_hosts:
-      - host.docker.internal:host-gateway
+      - .:/workspace
+    shm_size: '256m'
 
   gitlab-runner:
     depends_on:
