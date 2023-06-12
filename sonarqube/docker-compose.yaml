@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  sonarqube:
+    # image: sonarqube:community
+    image: mc1arke/sonarqube-with-community-branch-plugin:9.9-community
+    hostname: sonarqube
+    container_name: sonarqube
+    restart: always
+    depends_on:
+      - postgresql
+    environment:
+      TZ: Asia/Shanghai
+      SONAR_JDBC_URL: jdbc:postgresql://postgresql:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonarqube
+      SONAR_JDBC_PASSWORD: sonarqube
+    networks:
+      - sonarqube-net
+    # ports:
+    #   - "9001:9000"
+    volumes:
+      - /sonarqube/data:/opt/sonarqube/data
+      - /sonarqube/logs:/opt/sonarqube/logs
+      - /sonarqube/extensions/plugins:/opt/sonarqube/extensions/plugins
+
+  postgresql:
+    image: postgres:15
+    hostname: postgresql
+    container_name: postgresql
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      POSTGRES_DB: sonarqube
+      POSTGRES_USER: sonarqube
+      POSTGRES_PASSWORD: sonarqube
+    networks:
+      - sonarqube-net
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - /sonarqube/postgresql/data:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx
+    hostname: nginx
+    container_name: nginx
+    restart: always
+    depends_on:
+      - sonarqube
+    environment:
+      TZ: Asia/Shanghai
+    networks:
+      - sonarqube-net
+    ports:
+      - 9443:443
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/ssl/tls.crt:/etc/ssl/certs/tls.crt
+      - ./nginx/ssl/tls.key:/etc/ssl/private/tls.key
+
+networks:
+  sonarqube-net:
