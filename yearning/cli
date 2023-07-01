@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -eo pipefail
+
+case $1 in
+    setup)
+        sudo mkdir -p /yearning/data
+        sudo chmod -R 777 /yearning
+        docker compose up -d
+        ./cli logs
+        ;;
+    reset)
+        docker compose down
+        if [[ $2 == '-f' || $2 == '--force' ]]; then
+            sudo rm -rf /yearning
+        fi
+        ;;
+    resetup)
+        if [[ $2 == '-f' || $2 == '--force' ]]; then
+            ./cli reset -f
+        else
+            ./cli reset
+        fi
+        ./cli setup
+        ;;
+    logs)
+        docker compose logs -f --tail 100
+        ;;
+    gentls)
+        key=nginx/ssl/tls.key
+        crt=nginx/ssl/tls.crt
+        openssl genrsa 2048 > $key
+        openssl req -new -x509 -nodes -sha256 -days 365 -key $key -out $crt
+        ;;
+esac

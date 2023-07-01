@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  yearning:
+    image: yeelabs/yearning:latest
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_USER: yearning
+      MYSQL_PASSWORD: ukC2ZkcG_ZTeb
+      MYSQL_ADDR: mysql
+      MYSQL_DB: yearning
+      SECRET_KEY: dbcjqheupqjsuwsm
+      IS_DOCKER: is_docker
+    # 首次使用请先初始化
+    command: /bin/bash -c "./Yearning install && ./Yearning run"
+    # ports:
+    #   - 8000:8000
+    networks:
+      - yearning-net
+    volumes:
+      - ./yearning/opt/conf.toml:/opt/conf.toml
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ukC2ZkcG_ZTeb
+      MYSQL_DATABASE: yearning
+      MYSQL_USER: yearning
+      MYSQL_PASSWORD: ukC2ZkcG_ZTeb
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    networks:
+      - yearning-net
+    volumes:
+      - /yearning/data/mysql:/var/lib/mysql
+
+  nginx:
+    image: nginx
+    restart: always
+    depends_on:
+      - yearning
+    environment:
+      TZ: Asia/Shanghai
+      BACKEND: http://yearning:8000
+    networks:
+      - yearning-net
+    ports:
+      - 8443:443
+    volumes:
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+      - ./nginx/ssl/tls.crt:/etc/ssl/certs/tls.crt
+      - ./nginx/ssl/tls.key:/etc/ssl/private/tls.key
+
+networks:
+  yearning-net:
