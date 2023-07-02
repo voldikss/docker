@@ -2,10 +2,8 @@ version: '3.6'
 
 services:
   gitlab:
-    container_name: gitlab
     image: 'gitlab/gitlab-ee:latest'
     privileged: true
-    hostname: gitlab
     environment:
       GITLAB_ROOT_PASSWORD: dyz@0808
     networks:
@@ -25,10 +23,8 @@ services:
   gitlab-runner:
     depends_on:
       - gitlab
-    container_name: gitlab-runner
     image: gitlab/gitlab-runner:latest
     hostname: gitlab-runner
-    privileged: true
     networks:
       - gitlab
     ports:

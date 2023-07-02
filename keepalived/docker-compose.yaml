@@ -2,7 +2,6 @@ version: '3'
 
 services:
   master:
-    container_name: keepalived_master
     build:
       context: .
       args:
@@ -14,7 +13,6 @@ services:
       keepalived_net:
         ipv4_address: 192.168.200.132
   backup:
-    container_name: keepalived_backup
     build:
       context: .
       args:

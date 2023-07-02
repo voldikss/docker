@@ -4,8 +4,6 @@ services:
   sonarqube:
     # image: sonarqube:community
     image: mc1arke/sonarqube-with-community-branch-plugin:9.9-community
-    hostname: sonarqube
-    container_name: sonarqube
     restart: always
     depends_on:
       - postgresql
@@ -25,8 +23,6 @@ services:
 
   postgresql:
     image: postgres:15
-    hostname: postgresql
-    container_name: postgresql
     restart: always
     environment:
       TZ: Asia/Shanghai
@@ -42,8 +38,6 @@ services:
 
   nginx:
     image: nginx
-    hostname: nginx
-    container_name: nginx
     restart: always
     depends_on:
       - sonarqube

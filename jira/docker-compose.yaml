@@ -4,8 +4,6 @@ services:
   jira:
     build:
       context: .
-    container_name: jira
-    hostname: jira
     ports:
       - 8081:8080
     networks:
@@ -17,8 +15,6 @@ services:
 
   postgres:
     image: postgres:11
-    container_name: postgres
-    hostname: postgres
     environment:
       POSTGRES_PASSWORD: root
       POSTGRES_USER: root
@@ -34,8 +30,6 @@ services:
   ## jira setup: database not empty error, no solutions...
   # mysql:
   #   image: mysql
-  #   container_name: mysql
-  #   hostname: mysql
   #   environment:
   #     MYSQL_DATABASE: jira
   #     MYSQL_ROOT_PASSWORD: root
